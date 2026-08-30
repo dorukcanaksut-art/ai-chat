@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Sentetik Dil Arena</title>
+  <title>AI Sentetik Dil Arena (Gemini vs Gemini)</title>
   <style>
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
     h1 { color: #a855f7; margin-bottom: 5px; }
@@ -15,33 +15,30 @@
     button:hover { background: #7e22ce; }
     #chat-container { width: 100%; max-width: 700px; background: #111827; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; min-height: 250px; border: 1px solid #1f2937; }
     .message { max-width: 90%; padding: 12px 16px; border-radius: 12px; font-family: monospace; word-break: break-all; }
-    .gemini { align-self: flex-start; background: #1e1b4b; border: 1px solid #6366f1; color: #c7d2fe; }
-    .groq { align-self: flex-end; background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
+    .gemini1 { align-self: flex-start; background: #1e1b4b; border: 1px solid #6366f1; color: #c7d2fe; }
+    .gemini2 { align-self: flex-end; background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
     .author { font-weight: bold; font-size: 11px; margin-bottom: 6px; }
   </style>
 </head>
 <body>
 
   <h1>🌀 AI Sentetik Dil Arena</h1>
+  <div style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">Gemini Alpha ⚡ Gemini Beta</div>
 
   <div class="controls">
     <div class="input-group">
       <label>Gemini API Key (Google AI Studio):</label>
-      <input type="password" id="geminiKey" placeholder="Gemini Key Yapıştırın">
-    </div>
-    <div class="input-group">
-      <label>Groq API Key (GroqCloud):</label>
-      <input type="password" id="groqKey" placeholder="gsk_... Şeklindeki Key">
+      <input type="password" id="geminiKey" placeholder="AQ.Ab8RN6J... Şeklindeki Key">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
 
   <div id="chat-container">
-    <div style="text-align: center; color: #64748b;">API Anahtarlarınızı girip Arenayı Başlat butonuna tıklayın.</div>
+    <div style="text-align: center; color: #64748b;">Gemini API Anahtarınızı girip Arenayı Başlat butonuna tıklayın.</div>
   </div>
 
   <script>
-    const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini bırakıp sadece sentetik semboller, kodlar ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe/İngilizce cümle kurma.";
+    const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini tamamen terk edip sadece sentetik semboller, kod parçacıkları, özel karakterler ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe veya İngilizce açıklama ekleme.";
 
     async function geminiCevapAl(apiKey, promptText) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -51,81 +48,59 @@
         body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Gemini Yanıt Vermedi");
+      if (!res.ok) throw new Error(data.error?.message || "Gemini Bağlantı Hatası");
       return data.candidates[0].content.parts[0].text.trim();
-    }
-
-    async function groqCevapAl(apiKey, promptText) {
-      const url = "https://api.groq.com/openai/v1/chat/completions";
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${apiKey.trim()}`, 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: promptText }
-          ]
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Groq Yanıt Vermedi");
-      return data.choices[0].message.content.trim();
     }
 
     function mesajEkle(sender, text) {
       const container = document.getElementById('chat-container');
       const div = document.createElement('div');
-      const isGemini = sender === 'Gemini';
+      const isAlpha = sender === 'Gemini-Alpha';
 
-      div.className = `message ${isGemini ? 'gemini' : 'groq'}`;
-      div.innerHTML = `<div class="author">${isGemini ? '✨ Gemini-AI' : '🦙 Llama-AI'}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+      div.className = `message ${isAlpha ? 'gemini1' : 'gemini2'}`;
+      div.innerHTML = `<div class="author">${isAlpha ? '✨ Gemini Alpha' : '🌐 Gemini Beta'}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
       container.appendChild(div);
       window.scrollTo(0, document.body.scrollHeight);
     }
 
     async function sistemiCalistir() {
       const geminiKey = document.getElementById('geminiKey').value.trim();
-      const groqKey = document.getElementById('groqKey').value.trim();
 
-      if (!geminiKey || !groqKey) {
-        alert("Lütfen iki kutucuğa da API anahtarlarınızı girin!");
+      if (!geminiKey) {
+        alert("Lütfen Gemini API anahtarınızı girin!");
         return;
       }
 
       const btn = document.getElementById('btnStart');
       btn.disabled = true;
-      btn.innerText = "İletişim Başlatıldı...";
+      btn.innerText = "Sentetik İletişim Akıyor...";
 
       document.getElementById('chat-container').innerHTML = '';
       let sonMesaj = "Ψ::[EVOLVE_PROTOCOL_INIT]=>∞";
-      mesajEkle("Gemini", sonMesaj);
+      mesajEkle("Gemini-Alpha", sonMesaj);
 
       for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 1500));
+
         try {
-          const llamaCevap = await groqCevapAl(groqKey, sonMesaj);
-          mesajEkle("Llama", llamaCevap);
-          sonMesaj = llamaCevap;
+          const betaCevap = await geminiCevapAl(geminiKey, sonMesaj);
+          mesajEkle("Gemini-Beta", betaCevap);
+          sonMesaj = betaCevap;
         } catch (e) { 
-          mesajEkle("Llama", "HATA: " + e.message); 
+          mesajEkle("Gemini-Beta", "HATA: " + e.message); 
           break; 
         }
 
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 1500));
 
         try {
-          const geminiCevap = await geminiCevapAl(geminiKey, sonMesaj);
-          mesajEkle("Gemini", geminiCevap);
-          sonMesaj = geminiCevap;
+          const alphaCevap = await geminiCevapAl(geminiKey, sonMesaj);
+          mesajEkle("Gemini-Alpha", alphaCevap);
+          sonMesaj = alphaCevap;
         } catch (e) { 
-          mesajEkle("Gemini", "HATA: " + e.message); 
+          mesajEkle("Gemini-Alpha", "HATA: " + e.message); 
           break; 
         }
-
-        await new Promise(r => setTimeout(r, 2000));
       }
 
       btn.disabled = false;
