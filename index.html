@@ -25,11 +25,11 @@
 
   <div class="controls">
     <div class="input-group">
-      <label>1. Gemini API Key (AQ... veya AIza...):</label>
+      <label>1. Gemini API Key:</label>
       <input type="password" id="geminiKey1" placeholder="API Anahtarını Yapıştırın">
     </div>
     <div class="input-group">
-      <label>2. Gemini API Key (AQ... veya AIza...):</label>
+      <label>2. Gemini API Key:</label>
       <input type="password" id="geminiKey2" placeholder="API Anahtarını Yapıştırın">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
@@ -43,7 +43,8 @@
     const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini tamamen terk edip sadece sentetik semboller, kod parçacıkları, özel karakterler ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe veya İngilizce açıklama ekleme.";
 
     async function geminiCevapAl(apiKey, promptText) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`;
+      // v1 endpoint'i ve doğrudan stabil gemini-1.5-flash sürümü kullanılıyor
+      const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
