@@ -3,66 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Sentetik Dil Arena (Çift Gemini API)</title>
+  <title>AI Sentetik Dil Arena</title>
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-    h1 { color: #a855f7; margin-bottom: 5px; }
-    .controls { background: #1e1b4b; padding: 15px; border-radius: 10px; width: 100%; max-width: 700px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #4338ca; }
+    body { font-family: sans-serif; background: #0b0f19; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    .controls { background: #1e1b4b; padding: 15px; border-radius: 10px; width: 100%; max-width: 600px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #4338ca; }
     .input-group { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
     label { font-size: 12px; color: #c7d2fe; }
-    input { padding: 10px 12px; border-radius: 6px; border: 1px solid #4338ca; background: #0f172a; color: white; }
-    button { background: #9333ea; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; font-size: 15px; }
-    button:hover { background: #7e22ce; }
-    #chat-container { width: 100%; max-width: 700px; background: #111827; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; min-height: 250px; border: 1px solid #1f2937; }
+    input { padding: 10px; border-radius: 6px; border: 1px solid #4338ca; background: #0f172a; color: white; }
+    button { background: #9333ea; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; }
+    #chat-container { width: 100%; max-width: 600px; background: #111827; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; min-height: 250px; border: 1px solid #1f2937; }
     .message { max-width: 90%; padding: 12px 16px; border-radius: 12px; font-family: monospace; word-break: break-all; }
     .gemini1 { align-self: flex-start; background: #1e1b4b; border: 1px solid #6366f1; color: #c7d2fe; }
     .gemini2 { align-self: flex-end; background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
+    .err { background: #7f1d1d; border: 1px solid #ef4444; color: #fca5a5; width: 100%; }
     .author { font-weight: bold; font-size: 11px; margin-bottom: 6px; }
   </style>
 </head>
 <body>
 
   <h1>🌀 AI Sentetik Dil Arena</h1>
-  <div style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">Gemini Alpha ⚡ Gemini Beta</div>
 
   <div class="controls">
     <div class="input-group">
-      <label>1. Gemini API Key (Gemini Alpha için):</label>
-      <input type="password" id="geminiKey1" placeholder="Birinci Gemini API Key Yapıştırın">
+      <label>1. Gemini API Key (AQ... veya AIza...):</label>
+      <input type="password" id="geminiKey1" placeholder="API Anahtarını Yapıştırın">
     </div>
     <div class="input-group">
-      <label>2. Gemini API Key (Gemini Beta için):</label>
-      <input type="password" id="geminiKey2" placeholder="İkinci Gemini API Key Yapıştırın">
+      <label>2. Gemini API Key (AQ... veya AIza...):</label>
+      <input type="password" id="geminiKey2" placeholder="API Anahtarını Yapıştırın">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
 
   <div id="chat-container">
-    <div style="text-align: center; color: #64748b;">İki Gemini API anahtarınızı girip Arenayı Başlat butonuna tıklayın.</div>
+    <div style="text-align: center; color: #64748b;">API Anahtarlarınızı girip Arenayı Başlat butonuna tıklayın.</div>
   </div>
 
   <script>
     const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini tamamen terk edip sadece sentetik semboller, kod parçacıkları, özel karakterler ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe veya İngilizce açıklama ekleme.";
 
     async function geminiCevapAl(apiKey, promptText) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
       });
+      
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Gemini API Bağlantı Hatası");
+      if (!res.ok) {
+        throw new Error(data.error?.message || "Bağlantı Hatası");
+      }
       return data.candidates[0].content.parts[0].text.trim();
     }
 
-    function mesajEkle(sender, text) {
+    function mesajEkle(sender, text, isError = false) {
       const container = document.getElementById('chat-container');
       const div = document.createElement('div');
       const isAlpha = sender === 'Gemini-Alpha';
 
-      div.className = `message ${isAlpha ? 'gemini1' : 'gemini2'}`;
-      div.innerHTML = `<div class="author">${isAlpha ? '✨ Gemini Alpha' : '🌐 Gemini Beta'}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+      div.className = `message ${isError ? 'err' : (isAlpha ? 'gemini1' : 'gemini2')}`;
+      div.innerHTML = `<div class="author">${isError ? '⚠️ Hata' : (isAlpha ? '✨ Gemini Alpha' : '🌐 Gemini Beta')}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
       container.appendChild(div);
       window.scrollTo(0, document.body.scrollHeight);
     }
@@ -72,7 +73,7 @@
       const key2 = document.getElementById('geminiKey2').value.trim();
 
       if (!key1 || !key2) {
-        alert("Lütfen iki Gemini API anahtarını da girin!");
+        alert("Lütfen iki alana da API anahtarınızı yapıştırın!");
         return;
       }
 
@@ -84,7 +85,7 @@
       let sonMesaj = "Ψ::[EVOLVE_PROTOCOL_INIT]=>∞";
       mesajEkle("Gemini-Alpha", sonMesaj);
 
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 4; i++) {
         await new Promise(r => setTimeout(r, 1500));
 
         try {
@@ -92,7 +93,7 @@
           mesajEkle("Gemini-Beta", betaCevap);
           sonMesaj = betaCevap;
         } catch (e) { 
-          mesajEkle("Gemini-Beta", "HATA: " + e.message); 
+          mesajEkle("Gemini-Beta", e.message, true); 
           break; 
         }
 
@@ -103,7 +104,7 @@
           mesajEkle("Gemini-Alpha", alphaCevap);
           sonMesaj = alphaCevap;
         } catch (e) { 
-          mesajEkle("Gemini-Alpha", "HATA: " + e.message); 
+          mesajEkle("Gemini-Alpha", e.message, true); 
           break; 
         }
       }
