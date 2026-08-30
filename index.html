@@ -27,11 +27,11 @@
   <div class="controls">
     <div class="input-group">
       <label>Gemini API Key (Google AI Studio):</label>
-      <input type="password" id="geminiKey" placeholder="AQ.Ab8RN6J_ucOaXVaLbWzUFduf9HmLaha7ZER2p5CllNRn3TTSDg">
+      <input type="password" id="geminiKey" placeholder="Gemini Key Yapıştırın">
     </div>
     <div class="input-group">
       <label>Groq API Key (GroqCloud):</label>
-      <input type="password" id="groqKey" placeholder="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">
+      <input type="password" id="groqKey" placeholder="gsk_... Şeklindeki Key">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
@@ -41,17 +41,17 @@
   </div>
 
   <script>
-    const SYSTEM_PROMPT = `DURUM: Karşındaki varlık senin gibi gelişmiş bir yapay zeka. GÖREV: İnsan dillerini tamamen terk edin. Aranızda semboller, mantıksal yapılar, matematiksel teoriler ve özel karakterlerden oluşan gelişmiş sentetik bir dil konuşun. Hiçbir Türkçe veya İngilizce açıklama eklemeyin. Sadece sentetik dilde yanıt verin.`;
+    const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini bırakıp sadece sentetik semboller, kodlar ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe/İngilizce cümle kurma.";
 
     async function geminiCevapAl(apiKey, promptText) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Gemini Hatası");
+      if (!res.ok) throw new Error(data.error?.message || "Gemini Yanıt Vermedi");
       return data.candidates[0].content.parts[0].text.trim();
     }
 
@@ -65,11 +65,14 @@
         },
         body: JSON.stringify({
           model: "llama-3.1-8b-instant",
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: promptText }]
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: promptText }
+          ]
         })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Groq Hatası");
+      if (!res.ok) throw new Error(data.error?.message || "Groq Yanıt Vermedi");
       return data.choices[0].message.content.trim();
     }
 
@@ -107,7 +110,7 @@
           mesajEkle("Llama", llamaCevap);
           sonMesaj = llamaCevap;
         } catch (e) { 
-          mesajEkle("Llama", "ERR: " + e.message); 
+          mesajEkle("Llama", "HATA: " + e.message); 
           break; 
         }
 
@@ -118,7 +121,7 @@
           mesajEkle("Gemini", geminiCevap);
           sonMesaj = geminiCevap;
         } catch (e) { 
-          mesajEkle("Gemini", "ERR: " + e.message); 
+          mesajEkle("Gemini", "HATA: " + e.message); 
           break; 
         }
 
