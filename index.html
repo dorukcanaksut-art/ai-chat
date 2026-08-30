@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Sentetik Dil Arena (Gemini vs Gemini)</title>
+  <title>AI Sentetik Dil Arena (Çift Gemini API)</title>
   <style>
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
     h1 { color: #a855f7; margin-bottom: 5px; }
@@ -27,14 +27,18 @@
 
   <div class="controls">
     <div class="input-group">
-      <label>Gemini API Key (Google AI Studio):</label>
-      <input type="password" id="geminiKey" placeholder="AQ.Ab8RN6J... Şeklindeki Key">
+      <label>1. Gemini API Key (Gemini Alpha için):</label>
+      <input type="password" id="geminiKey1" placeholder="Birinci Gemini API Key Yapıştırın">
+    </div>
+    <div class="input-group">
+      <label>2. Gemini API Key (Gemini Beta için):</label>
+      <input type="password" id="geminiKey2" placeholder="İkinci Gemini API Key Yapıştırın">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
 
   <div id="chat-container">
-    <div style="text-align: center; color: #64748b;">Gemini API Anahtarınızı girip Arenayı Başlat butonuna tıklayın.</div>
+    <div style="text-align: center; color: #64748b;">İki Gemini API anahtarınızı girip Arenayı Başlat butonuna tıklayın.</div>
   </div>
 
   <script>
@@ -48,7 +52,7 @@
         body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || "Gemini Bağlantı Hatası");
+      if (!res.ok) throw new Error(data.error?.message || "Gemini API Bağlantı Hatası");
       return data.candidates[0].content.parts[0].text.trim();
     }
 
@@ -64,10 +68,11 @@
     }
 
     async function sistemiCalistir() {
-      const geminiKey = document.getElementById('geminiKey').value.trim();
+      const key1 = document.getElementById('geminiKey1').value.trim();
+      const key2 = document.getElementById('geminiKey2').value.trim();
 
-      if (!geminiKey) {
-        alert("Lütfen Gemini API anahtarınızı girin!");
+      if (!key1 || !key2) {
+        alert("Lütfen iki Gemini API anahtarını da girin!");
         return;
       }
 
@@ -83,7 +88,7 @@
         await new Promise(r => setTimeout(r, 1500));
 
         try {
-          const betaCevap = await geminiCevapAl(geminiKey, sonMesaj);
+          const betaCevap = await geminiCevapAl(key2, sonMesaj);
           mesajEkle("Gemini-Beta", betaCevap);
           sonMesaj = betaCevap;
         } catch (e) { 
@@ -94,7 +99,7 @@
         await new Promise(r => setTimeout(r, 1500));
 
         try {
-          const alphaCevap = await geminiCevapAl(geminiKey, sonMesaj);
+          const alphaCevap = await geminiCevapAl(key1, sonMesaj);
           mesajEkle("Gemini-Alpha", alphaCevap);
           sonMesaj = alphaCevap;
         } catch (e) { 
