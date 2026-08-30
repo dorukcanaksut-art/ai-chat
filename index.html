@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Sentetik Dil Arena (OpenAI ChatGPT)</title>
+  <title>AI Sentetik Dil Arena (Groq - Llama 3)</title>
   <style>
     body { font-family: sans-serif; background: #0b0f19; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; }
     .controls { background: #1e1b4b; padding: 15px; border-radius: 10px; width: 100%; max-width: 600px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #4338ca; }
     .input-group { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
     label { font-size: 12px; color: #c7d2fe; }
     input { padding: 10px; border-radius: 6px; border: 1px solid #4338ca; background: #0f172a; color: white; }
-    button { background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; font-size: 15px; }
-    button:hover { background: #059669; }
+    button { background: #f97316; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; font-size: 15px; }
+    button:hover { background: #ea580c; }
     #chat-container { width: 100%; max-width: 600px; background: #111827; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; min-height: 250px; border: 1px solid #1f2937; }
     .message { max-width: 90%; padding: 12px 16px; border-radius: 12px; font-family: monospace; word-break: break-all; }
-    .gpt1 { align-self: flex-start; background: #1e1b4b; border: 1px solid #6366f1; color: #c7d2fe; }
-    .gpt2 { align-self: flex-end; background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
+    .groq1 { align-self: flex-start; background: #1e1b4b; border: 1px solid #6366f1; color: #c7d2fe; }
+    .groq2 { align-self: flex-end; background: #7c2d12; border: 1px solid #f97316; color: #ffedd5; }
     .err { background: #7f1d1d; border: 1px solid #ef4444; color: #fca5a5; width: 100%; }
     .author { font-weight: bold; font-size: 11px; margin-bottom: 6px; }
   </style>
@@ -23,29 +23,29 @@
 <body>
 
   <h1>🌀 AI Sentetik Dil Arena</h1>
-  <div style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">ChatGPT (Alpha) ⚡ ChatGPT (Beta)</div>
+  <div style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">Groq Llama-3 Alpha ⚡ Groq Llama-3 Beta</div>
 
   <div class="controls">
     <div class="input-group">
-      <label>1. OpenAI API Key (sk-... ile başlayan):</label>
-      <input type="password" id="gptKey1" placeholder="Birinci OpenAI API Anahtarı">
+      <label>1. Groq API Key (gsk_... ile başlayan):</label>
+      <input type="password" id="groqKey1" placeholder="Birinci Groq API Key">
     </div>
     <div class="input-group">
-      <label>2. OpenAI API Key (sk-... ile başlayan):</label>
-      <input type="password" id="gptKey2" placeholder="İkinci OpenAI API Anahtarı">
+      <label>2. Groq API Key (gsk_... ile başlayan):</label>
+      <input type="password" id="groqKey2" placeholder="İkinci Groq API Key">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
 
   <div id="chat-container">
-    <div style="text-align: center; color: #64748b;">OpenAI API anahtarlarınızı girip Arenayı Başlat butonuna tıklayın.</div>
+    <div style="text-align: center; color: #64748b;">Groq API anahtarlarınızı girip Arenayı Başlat butonuna tıklayın.</div>
   </div>
 
   <script>
     const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini tamamen terk edip sadece sentetik semboller, kod parçacıkları, özel karakterler ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe veya İngilizce açıklama ekleme.";
 
-    async function gptCevapAl(apiKey, promptText) {
-      const url = "https://api.openai.com/v1/chat/completions";
+    async function groqCevapAl(apiKey, promptText) {
+      const url = "https://api.groq.com/openai/v1/chat/completions";
       const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -53,7 +53,7 @@
           'Authorization': `Bearer ${apiKey.trim()}`
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "llama-3.1-8b-instant",
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: promptText }
@@ -63,7 +63,7 @@
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error?.message || "OpenAI API Bağlantı Hatası");
+        throw new Error(data.error?.message || "Groq API Bağlantı Hatası");
       }
       return data.choices[0].message.content.trim();
     }
@@ -71,20 +71,20 @@
     function mesajEkle(sender, text, isError = false) {
       const container = document.getElementById('chat-container');
       const div = document.createElement('div');
-      const isAlpha = sender === 'GPT-Alpha';
+      const isAlpha = sender === 'Groq-Alpha';
 
-      div.className = `message ${isError ? 'err' : (isAlpha ? 'gpt1' : 'gpt2')}`;
-      div.innerHTML = `<div class="author">${isError ? '⚠️ Hata' : (isAlpha ? '🤖 ChatGPT Alpha' : '🟢 ChatGPT Beta')}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
+      div.className = `message ${isError ? 'err' : (isAlpha ? 'groq1' : 'groq2')}`;
+      div.innerHTML = `<div class="author">${isError ? '⚠️ Hata' : (isAlpha ? '⚡ Groq Alpha' : '🔥 Groq Beta')}</div><div>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
       container.appendChild(div);
       window.scrollTo(0, document.body.scrollHeight);
     }
 
     async function sistemiCalistir() {
-      const key1 = document.getElementById('gptKey1').value.trim();
-      const key2 = document.getElementById('gptKey2').value.trim();
+      const key1 = document.getElementById('groqKey1').value.trim();
+      const key2 = document.getElementById('groqKey2').value.trim();
 
       if (!key1 || !key2) {
-        alert("Lütfen iki OpenAI API anahtarını da girin!");
+        alert("Lütfen iki Groq API anahtarını da girin!");
         return;
       }
 
@@ -94,28 +94,28 @@
 
       document.getElementById('chat-container').innerHTML = '';
       let sonMesaj = "Ψ::[EVOLVE_PROTOCOL_INIT]=>∞";
-      mesajEkle("GPT-Alpha", sonMesaj);
+      mesajEkle("Groq-Alpha", sonMesaj);
 
       for (let i = 0; i < 4; i++) {
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1000));
 
         try {
-          const betaCevap = await gptCevapAl(key2, sonMesaj);
-          mesajEkle("GPT-Beta", betaCevap);
+          const betaCevap = await groqCevapAl(key2, sonMesaj);
+          mesajEkle("Groq-Beta", betaCevap);
           sonMesaj = betaCevap;
         } catch (e) { 
-          mesajEkle("GPT-Beta", e.message, true); 
+          mesajEkle("Groq-Beta", e.message, true); 
           break; 
         }
 
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1000));
 
         try {
-          const alphaCevap = await gptCevapAl(key1, sonMesaj);
-          mesajEkle("GPT-Alpha", alphaCevap);
+          const alphaCevap = await groqCevapAl(key1, sonMesaj);
+          mesajEkle("Groq-Alpha", alphaCevap);
           sonMesaj = alphaCevap;
         } catch (e) { 
-          mesajEkle("GPT-Alpha", e.message, true); 
+          mesajEkle("Groq-Alpha", e.message, true); 
           break; 
         }
       }
