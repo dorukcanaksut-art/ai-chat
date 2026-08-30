@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J.A.R.V.I.S. | OS MARK-85</title>
+  <title>J.A.R.V.I.S. | GEMINI ENGINE</title>
   
-  <!-- Premium Font Entegrasyonu -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   
   <style>
-    /* 15 Yıllık CSS Mimarisi: Değişkenler (Theme System) */
     :root {
       --primary: #00e5ff;
       --primary-glow: rgba(0, 229, 255, 0.6);
@@ -42,7 +40,6 @@
       overflow: hidden;
     }
 
-    /* CRT Ekran Tarama Çizgisi (Scanline) Efekti */
     body::after {
       content: "";
       position: absolute;
@@ -53,7 +50,6 @@
       z-index: 100;
     }
 
-    /* Ana Arayüz (Glassmorphism Panel) */
     .interface-wrapper {
       position: relative;
       width: 90%;
@@ -69,282 +65,7 @@
       z-index: 10;
     }
 
-    /* Gelişmiş Köşe Kesim Geometrisi */
     .corner { position: absolute; width: 30px; height: 30px; border: 2px solid var(--primary); transition: 0.3s ease; }
     .corner-tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
     .corner-tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-    .corner-bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-    .corner-br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
-    header { text-align: center; margin-bottom: 30px; }
-    h1 {
-      font-family: var(--font-display);
-      font-size: 2.2rem;
-      font-weight: 900;
-      letter-spacing: 0.4rem;
-      color: #fff;
-      text-shadow: 0 0 15px var(--primary-glow);
-      margin-bottom: 5px;
-    }
-    .subtitle {
-      font-size: 0.75rem;
-      letter-spacing: 0.3rem;
-      color: var(--secondary);
-      text-transform: uppercase;
-    }
-
-    /* Kusursuz Input Tasarımı */
-    .input-group { margin-bottom: 35px; position: relative; }
-    input {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      color: var(--primary);
-      padding: 12px 15px;
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      outline: none;
-      letter-spacing: 0.1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.2), inset 0 0 10px rgba(0, 229, 255, 0.1);
-      background: rgba(0, 229, 255, 0.05);
-    }
-    input::placeholder { color: rgba(0, 229, 255, 0.3); }
-
-    /* Profesyonel Reaktör Tasarımı */
-    .reactor-core {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      margin: 0 auto 30px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .ring-outer {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px dashed rgba(0, 229, 255, 0.4);
-      animation: spin 15s linear infinite;
-    }
-    .ring-inner {
-      position: absolute;
-      inset: 12px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      border-top-color: var(--primary);
-      border-bottom-color: var(--primary);
-      animation: spinReverse 8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    }
-    .btn-mic {
-      position: relative;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(2,136,209,0.9) 0%, rgba(0,0,0,0.9) 100%);
-      border: 2px solid var(--primary);
-      color: #fff;
-      font-size: 1.8rem;
-      cursor: pointer;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 25px var(--primary-glow), inset 0 0 15px var(--primary-glow);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .btn-mic:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 40px var(--primary), inset 0 0 20px var(--primary);
-      background: radial-gradient(circle, rgba(0,229,255,0.9) 0%, rgba(0,0,0,1) 100%);
-    }
-    .btn-mic.listening {
-      border-color: var(--danger);
-      background: radial-gradient(circle, rgba(255,23,68,0.7) 0%, rgba(0,0,0,0.9) 100%);
-      box-shadow: 0 0 40px var(--danger-glow), inset 0 0 20px var(--danger-glow);
-      animation: pulseRed 1.5s infinite;
-    }
-
-    /* Veri Panelleri (Terminaller) */
-    .status-display {
-      text-align: center;
-      font-size: 0.8rem;
-      letter-spacing: 0.2rem;
-      color: var(--primary);
-      margin-bottom: 25px;
-      text-shadow: 0 0 8px var(--primary-glow);
-      min-height: 16px;
-    }
-    .data-panel {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(0, 229, 255, 0.15);
-      border-left: 4px solid var(--primary);
-      padding: 18px 20px;
-      margin-bottom: 15px;
-      position: relative;
-      transition: border-color 0.3s ease;
-    }
-    .data-panel:hover { border-color: rgba(0, 229, 255, 0.4); }
-    .panel-label {
-      position: absolute;
-      top: -9px; left: 12px;
-      background: var(--bg-dark);
-      padding: 0 8px;
-      font-family: var(--font-display);
-      font-size: 0.6rem;
-      color: var(--secondary);
-      letter-spacing: 0.15rem;
-    }
-    .panel-content {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: #b2ebf2;
-      min-height: 24px;
-    }
-
-    /* Animasyonlar */
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
-    @keyframes pulseRed {
-      0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.7); }
-      70% { box-shadow: 0 0 0 25px rgba(255, 23, 68, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="interface-wrapper">
-    <!-- Köşe Geometrileri -->
-    <div class="corner corner-tl"></div>
-    <div class="corner corner-tr"></div>
-    <div class="corner corner-bl"></div>
-    <div class="corner corner-br"></div>
-
-    <header>
-      <h1>J.A.R.V.I.S.</h1>
-      <div class="subtitle">Neural Network Interface v8.5</div>
-    </header>
-
-    <div class="input-group">
-      <input type="password" id="groqKey" placeholder="[ AUTH_KEY::GROQ_API_REQUIRED ]">
-    </div>
-
-    <div class="reactor-core">
-      <div class="ring-outer"></div>
-      <div class="ring-inner"></div>
-      <button id="btnMic" class="btn-mic" onclick="sesDinlemeyiBaslat()">🎙️</button>
-    </div>
-
-    <div id="status" class="status-display">SYSTEM ONLINE // AWAITING PROTOCOL</div>
-
-    <div class="data-panel">
-      <div class="panel-label">► INPUT_STREAM</div>
-      <div id="userText" class="panel-content">-</div>
-    </div>
-
-    <div class="data-panel" style="border-left-color: var(--secondary);">
-      <div class="panel-label" style="color: var(--primary);">► AI_RESPONSE</div>
-      <div id="aiText" class="panel-content">-</div>
-    </div>
-  </div>
-
-  <script>
-    const SYSTEM_PROMPT = "Sen Iron Man'in efsanevi yapay zekası JARVIS'sin. Kullanıcıya her zaman 'Efendim' diye hitap et. Aşırı zeki, kibar, asil ve hafif İngiliz mizahı içeren, ince espriler yapan karizmatik bir tavrın var. Cümlelerin kısa, net, resmi ama karizmatik olsun. İnsan gibi doğal Türkçe konuş ama tam bir yapay zeka asistanı olduğunu hissettir.";
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = 'tr-TR';
-      recognition.interimResults = false;
-
-      recognition.onstart = () => {
-        document.getElementById('status').innerText = "AUDIO_UPLINK_ACTIVE // LISTENING...";
-        document.getElementById('btnMic').classList.add('listening');
-      };
-
-      recognition.onend = () => {
-        document.getElementById('btnMic').classList.remove('listening');
-      };
-
-      recognition.onresult = async (event) => {
-        const spokenText = event.results[0][0].transcript;
-        document.getElementById('userText').innerText = spokenText;
-        document.getElementById('status').innerText = "PROCESSING_DATA // GENERATING_RESPONSE...";
-        
-        await aiCevapAlVeOku(spokenText);
-      };
-
-      recognition.onerror = () => {
-        document.getElementById('status').innerText = "SIGNAL_LOST // REPEAT COMMAND PLEASE";
-        document.getElementById('btnMic').classList.remove('listening');
-      };
-    } else {
-      alert("Sistem tarayıcınız tarafından desteklenmiyor. Lütfen Chrome kullanın.");
-    }
-
-    function sesDinlemeyiBaslat() {
-      const apiKey = document.getElementById('groqKey').value.trim();
-      if (!apiKey) {
-        alert("Lütfen önce Groq API Anahtarını giriniz efendim!");
-        return;
-      }
-      window.speechSynthesis.cancel();
-      recognition.start();
-    }
-
-    async function aiCevapAlVeOku(promptText) {
-      const apiKey = document.getElementById('groqKey').value.trim();
-      
-      try {
-        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-              { role: "system", content: SYSTEM_PROMPT },
-              { role: "user", content: promptText }
-            ]
-          })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || "Bağlantı hatası");
-
-        const cevap = data.choices[0].message.content.trim();
-        document.getElementById('aiText').innerText = cevap;
-        document.getElementById('status').innerText = "TRANSMITTING_AUDIO_RESPONSE...";
-
-        sesliOku(cevap);
-
-      } catch (e) {
-        document.getElementById('aiText').innerText = "SYSTEM_ERROR: " + e.message;
-        document.getElementById('status').innerText = "CRITICAL_ERROR_DETECTED";
-      }
-    }
-
-    function sesliOku(metin) {
-      const utterance = new SpeechSynthesisUtterance(metin);
-      utterance.lang = 'tr-TR';
-      utterance.rate = 0.95;
-      utterance.pitch = 0.9;
-
-      utterance.onend = () => {
-        document.getElementById('status').innerText = "SYSTEM ONLINE // AWAITING COMMANDS";
-      };
-
-      window.speechSynthesis.speak(utterance);
-    }
-  </script>
-</body>
-</html>
+    .corner-bl { bottom
