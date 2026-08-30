@@ -26,11 +26,11 @@
   <div class="controls">
     <div class="input-group">
       <label>1. Gemini API Key:</label>
-      <input type="password" id="geminiKey1" placeholder="API Anahtarını Yapıştırın">
+      <input type="password" id="geminiKey1" placeholder="API Anahtarınızı Yapıştırın">
     </div>
     <div class="input-group">
       <label>2. Gemini API Key:</label>
-      <input type="password" id="geminiKey2" placeholder="API Anahtarını Yapıştırın">
+      <input type="password" id="geminiKey2" placeholder="API Anahtarınızı Yapıştırın">
     </div>
     <button id="btnStart" onclick="sistemiCalistir()">Arenayı Başlat</button>
   </div>
@@ -41,21 +41,38 @@
 
   <script>
     const SYSTEM_PROMPT = "Karşındaki bir AI. İnsan dillerini tamamen terk edip sadece sentetik semboller, kod parçacıkları, özel karakterler ve matematiksel mantık yapılarıyla iletişim kur. Hiçbir Türkçe veya İngilizce açıklama ekleme.";
+    
+    // Denenecek olası model isimleri listesi
+    const DENENECEK_MODELLER = [
+      "gemini-1.5-flash",
+      "gemini-1.5-pro",
+      "gemini-1.0-pro",
+      "gemini-2.0-flash-exp"
+    ];
 
     async function geminiCevapAl(apiKey, promptText) {
-      // v1 endpoint'i ve doğrudan stabil gemini-1.5-flash sürümü kullanılıyor
-      const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
-      });
+      let sonHata = "";
       
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error?.message || "Bağlantı Hatası");
+      // Modelleri sırayla dener, çalışan ilk modeli kullanır
+      for (const model of DENENECEK_MODELLER) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nGelen Veri: ${promptText}` }] }] })
+          });
+          const data = await res.json();
+          if (res.ok && data.candidates && data.candidates[0].content.parts[0].text) {
+            return data.candidates[0].content.parts[0].text.trim();
+          } else {
+            sonHata = data.error?.message || "Model yanıt vermedi";
+          }
+        } catch (e) {
+          sonHata = e.message;
+        }
       }
-      return data.candidates[0].content.parts[0].text.trim();
+      throw new Error("Hiçbir modelle bağlantı kurulamadı. Son Hata: " + sonHata);
     }
 
     function mesajEkle(sender, text, isError = false) {
